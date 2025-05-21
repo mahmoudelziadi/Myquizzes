@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit 7 Quiz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles for a cheerful theme */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #cbebfa 100%); /* Light blue gradient */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+            color: #333;
+        }
+
+        .quiz-container {
+            background-color: #ffffff;
+            border-radius: 1.5rem; /* More rounded corners */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            padding: 2rem;
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+            animation: fadeIn 1s ease-out;
+            border: 2px solid #a7d9f7; /* Subtle border */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1, h2 {
+            font-family: 'Caveat', cursive; /* Cheerful font for titles */
+            color: #ff6f61; /* Vibrant coral */
+            margin-bottom: 1.5rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .question-card {
+            background-color: #e0f7fa; /* Light cyan */
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: left;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .question-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .question-text {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #00796b; /* Dark teal */
+            margin-bottom: 1rem;
+        }
+
+        .options-grid {
+            display: grid;
+            gap: 0.75rem;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Responsive grid */
+        }
+
+        .option-button {
+            background-color: #80deea; /* Cyan */
+            color: #fff;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            touch-action: manipulation; /* Improve touch responsiveness */
+        }
+
+        .option-button:hover {
+            background-color: #4dd0e1; /* Darker cyan on hover */
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .option-button.selected {
+            background-color: #ffab91; /* Light coral for selected */
+            border: 2px solid #ff6f61;
+            transform: scale(1.02);
+        }
+
+        .option-button.correct {
+            background-color: #a5d6a7; /* Light green for correct */
+            border: 2px solid #4caf50;
+            animation: pulseCorrect 0.5s ease-in-out;
+        }
+
+        .option-button.incorrect {
+            background-color: #ef9a9a; /* Light red for incorrect */
+            border: 2px solid #f44336;
+            animation: shakeIncorrect 0.5s ease-in-out;
+        }
+
+        @keyframes pulseCorrect {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes shakeIncorrect {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+
+        .submit-button, .retake-button {
+            background: linear-gradient(45deg, #ff6f61 0%, #ffc107 100%); /* Orange-red to yellow gradient */
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 1.5rem;
+            border: none;
+            cursor: pointer;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-top: 2rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+            box-shadow: 0 10px 15px -3px rgba(255, 111, 97, 0.3), 0 4px 6px -2px rgba(255, 193, 7, 0.2);
+            touch-action: manipulation;
+        }
+
+        .submit-button:hover, .retake-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 20px -5px rgba(255, 111, 97, 0.4), 0 6px 10px -3px rgba(255, 193, 7, 0.3);
+        }
+
+        .submit-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .score-display {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #00796b;
+            margin-top: 1.5rem;
+            animation: bounceIn 0.8s ease-out;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            70% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+
+        .signature {
+            font-family: 'Caveat', cursive;
+            font-size: 1.5rem;
+            color: #ff6f61;
+            margin-top: 2rem;
+            text-align: right;
+            width: 100%;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 640px) {
+            .quiz-container {
+                padding: 1rem;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            .question-text {
+                font-size: 1.1rem;
+            }
+            .options-grid {
+                grid-template-columns: 1fr; /* Stack options on small screens */
+            }
+            .option-button {
+                padding: 0.6rem 0.8rem;
+                font-size: 0.9rem;
+            }
+            .submit-button, .retake-button {
+                padding: 0.8rem 1.5rem;
+                font-size: 1.1rem;
+            }
+            .score-display {
+                font-size: 1.5rem;
+            }
+            .signature {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <h1 class="text-4xl font-bold mb-4">Unit 7 Quiz</h1>
+        <h2 class="text-2xl font-semibold mb-8">Prepared by Mr. Mahmoud Elziadi</h2>
+
+        <div id="quiz-questions">
+            </div>
+
+        <button id="submit-quiz" class="submit-button">Submit Quiz</button>
+        
+        <div id="quiz-results" class="hidden">
+            <p class="score-display">Your Score: <span id="score">0</span> / <span id="total-questions">0</span></p>
+            <button id="retake-quiz" class="retake-button">Retake Quiz</button>
+        </div>
+
+        <p class="signature">Mr. Mahmoud Elziadi</p>
+    </div>
+
+    <script>
+        // Array of quiz questions with options and correct answers
+        const quizData = [
+            // Grammar Questions (from images)
+            {
+                question: "No one is _______ to smoke in public places. It is forbidden.",
+                options: ["prevented", "banned", "necessary", "allowed"],
+                correctAnswer: "allowed"
+            },
+            {
+                question: "You _______ forget what I have told you. It is very important.",
+                options: ["don't have to", "mustn't", "should", "needn't"],
+                correctAnswer: "mustn't"
+            },
+            {
+                question: "All employees _______ be at their offices at 8 am. It's a strict rule here in our company.",
+                options: ["should", "don't have to", "mustn't", "must"],
+                correctAnswer: "must"
+            },
+            {
+                question: "You _______ drive fast in the city centre. It is really dangerous.",
+                options: ["must", "have to", "don't have to", "mustn't"],
+                correctAnswer: "mustn't"
+            },
+            {
+                question: "You _______ get up early tomorrow. It's a holiday.",
+                options: ["shouldn't", "don't have to", "mustn't", "can't"],
+                correctAnswer: "don't have to"
+            },
+            {
+                question: "Children _______ play with matches. It's dangerous.",
+                options: ["must", "mustn't", "should", "can"],
+                correctAnswer: "mustn't"
+            },
+            {
+                question: "It is really a good film. You _______ to go and see it with your family.",
+                options: ["must", "should", "had better", "ought"],
+                correctAnswer: "ought"
+            },
+            {
+                question: "We _______ never forget how much we owe to our parents.",
+                options: ["shouldn't", "ought", "mustn't", "must"],
+                correctAnswer: "must"
+            },
+            {
+                question: "We _______ hurry. We still have a lot of time.",
+                options: ["shouldn't", "needn't", "mustn't", "can't"],
+                correctAnswer: "needn't"
+            },
+            {
+                question: "You _______ revise for the exam. It's my advice.",
+                options: ["must", "should", "mustn't", "shouldn't"],
+                correctAnswer: "should"
+            },
+            // Final Revision Grammar Questions (from images)
+            {
+                question: "You _______ take photos here; you're not allowed to do so.",
+                options: ["must", "mustn't", "needn't", "hadn't better"],
+                correctAnswer: "mustn't"
+            },
+            {
+                question: "You _______ work to a plan; it's my best tip for you!",
+                options: ["have got", "must to", "need", "should"],
+                correctAnswer: "should"
+            },
+            {
+                question: "You _______ try my sister's cake now. It's really delicious!",
+                options: ["needn't", "had to", "must", "mustn't"],
+                correctAnswer: "must"
+            },
+            {
+                question: "I really _______ upgrade my mobile; one should be up-to-date.",
+                options: ["needn't", "have to", "mustn't", "must"],
+                correctAnswer: "must"
+            },
+            {
+                question: "It is inadvisable to watch too much TV. You _______ do so.",
+                options: ["shouldn't", "should", "don't have to", "must"],
+                correctAnswer: "shouldn't"
+            },
+            {
+                question: "Is it a/an _______ for me to take this medicine? It's very bitter.",
+                options: ["advice", "unnecessary", "necessary", "must"],
+                correctAnswer: "necessary"
+            },
+            {
+                question: "Look after your possessions. You _______ leave them on a bus or a train.",
+                options: ["ought to", "mustn't", "needn't", "should"],
+                correctAnswer: "mustn't"
+            },
+            {
+                question: "Drivers _______ follow traffic rules and laws.",
+                options: ["must", "have got", "mustn't", "shouldn't"],
+                correctAnswer: "must"
+            },
+            {
+                question: "You _______ drive a car without having a driving licence. It's against the law.",
+                options: ["should", "can't", "must", "shouldn't"],
+                correctAnswer: "can't"
+            },
+            {
+                question: "You _______ read this new story; you can't put it down!",
+                options: ["need", "shouldn't", "ought", "must"],
+                correctAnswer: "must"
+            },
+            {
+                question: "You _______ run close to the edge of the swimming pool. You might fall over.",
+                options: ["mustn't", "must", "should", "ought"],
+                correctAnswer: "mustn't"
+            },
+            {
+                question: "I _______ forget to visit my grandmother this weekend. I haven't visited her for about a month.",
+                options: ["shouldn't", "hadn't better", "mustn't", "needn't"],
+                correctAnswer: "mustn't"
+            },
+            {
+                question: "This is a smoke-free area. You _______ smoke here, or you'll be fined.",
+                options: ["should", "must", "mustn't", "needn't"],
+                correctAnswer: "mustn't"
+            },
+            {
+                question: "You _______ pay your bills by the end of the month, or I'll report you to the police.",
+                options: ["must", "need", "mustn't", "shouldn't"],
+                correctAnswer: "must"
+            },
+            {
+                question: "To keep healthy, you _______ follow the rules of hygiene.",
+                options: ["ought", "shouldn't", "should", "mustn't"],
+                correctAnswer: "should"
+            },
+            {
+                question: "You _______ eat too much fat. It's bad for your health.",
+                options: ["should", "must", "shouldn't", "have to"],
+                correctAnswer: "shouldn't"
+            },
+            {
+                question: "There's a lot of dust on the bookshelf. You _______ clean your room more often.",
+                options: ["has to", "mustn't", "shouldn't", "must"],
+                correctAnswer: "must"
+            },
+            {
+                question: "It's _______ to wash your hands with soap and water before having meals.",
+                options: ["banned", "advisable", "forbidden", "prohibited"],
+                correctAnswer: "advisable"
+            },
+            {
+                question: "You _______ sit on that wall. It isn't safe.",
+                options: ["mightn't", "shouldn't", "needn't", "should"],
+                correctAnswer: "shouldn't"
+            },
+            {
+                question: "You _______ be very careful when you cross a road.",
+                options: ["mustn't", "must", "shouldn't", "can't"],
+                correctAnswer: "must"
+            },
+            {
+                question: "You _______ play games in the school library. It is not allowed.",
+                options: ["don't have to", "needn't", "haven't got", "can't"],
+                correctAnswer: "can't"
+            },
+            {
+                question: "You are strictly _______ from smoking in a petrol station.",
+                options: ["prohibited", "allowed", "necessary", "permitted"],
+                correctAnswer: "prohibited"
+            },
+            {
+                question: "You aren't _______ to climb the trees here. This means you mustn't climb them.",
+                options: ["banned", "permitted", "prohibited", "forbidden"],
+                correctAnswer: "permitted"
+            },
+            {
+                question: "Oh! I'm so late. I _______ leave now or my mother will be angry.",
+                options: ["had better to", "have got", "had to", "must"],
+                correctAnswer: "must"
+            },
+            {
+                question: "You are late for work, so you _______ take a taxi to get to the office on time.",
+                options: ["have got to", "shouldn't", "mustn't", "had to"],
+                correctAnswer: "have got to"
+            },
+            // Vocabulary Questions (from images)
+            {
+                question: "Rainforests are home _______ a lot of wild animals and reptiles.",
+                options: ["with", "after", "for", "on"],
+                correctAnswer: "for"
+            },
+            {
+                question: "We need to _______ the whole furniture in our house.",
+                options: ["lead", "pollute", "trust", "dust"],
+                correctAnswer: "dust"
+            },
+            {
+                question: "The _______ in this area is full of rocks and clay. It isn't good for agriculture.",
+                options: ["dust", "soil", "system", "foil"],
+                correctAnswer: "soil"
+            },
+            {
+                question: "Scientists are still conducting extensive _______ on climate change.",
+                options: ["recommendation", "decision", "research", "suggestion"],
+                correctAnswer: "research"
+            },
+            {
+                question: "It was difficult for me to _______ because of the dusty air.",
+                options: ["hail", "heal", "breathe", "breath"],
+                correctAnswer: "breathe"
+            },
+            {
+                question: "I'm so sorry, I've _______ the camera by mistake.",
+                options: ["feared", "filled", "fallen", "dropped"],
+                correctAnswer: "dropped"
+            },
+            {
+                question: "Because of the earthquake, the town is cut off from _______ with the outside world.",
+                options: ["contact", "contract", "equipment", "safety"],
+                correctAnswer: "contact"
+            },
+            {
+                question: "We should teach our children not to _______ their clothes while playing.",
+                options: ["clear", "clean", "wash", "soil"],
+                correctAnswer: "soil"
+            },
+            {
+                question: "Drivers should follow the traffic _______ in order not to be punished.",
+                options: ["roles", "rails", "rules", "rolls"],
+                correctAnswer: "rules"
+            },
+            {
+                question: "I like cats but unfortunately I have a/an _______ to them. I can't touch them.",
+                options: ["allergy", "disease", "sneeze", "pain"],
+                correctAnswer: "allergy"
+            },
+            {
+                question: "She wrapped herself in a warm _______ and went fast asleep.",
+                options: ["mist", "discovery", "blanket", "stand"],
+                correctAnswer: "blanket"
+            },
+            {
+                question: "By _______ smoking is banned in public places.",
+                options: ["luck", "lawyer", "law", "low"],
+                correctAnswer: "law"
+            },
+            {
+                question: "The _______ was soft and comfortable, perfect for a good night's sleep.",
+                options: ["carpet", "curtain", "bedding", "towel"],
+                correctAnswer: "bedding"
+            },
+            {
+                question: "The victims were all given first _______ at the scene of the accident.",
+                options: ["aid", "bedding", "injury", "allergy"],
+                correctAnswer: "aid"
+            },
+            {
+                question: "We spent the night _______ up the Christmas presents.",
+                options: ["boiling", "wrapping", "crossing", "pressing"],
+                correctAnswer: "wrapping"
+            },
+            {
+                question: "Please _______ the customer service team for assistance.",
+                options: ["harden", "associate", "endanger", "contact"],
+                correctAnswer: "contact"
+            },
+            {
+                question: "Divers can hold their _______ under water for so long.",
+                options: ["breathe", "lung", "breath", "death"],
+                correctAnswer: "breath"
+            },
+            {
+                question: "Doctors put plaster on cuts to stop _______ from polluting them.",
+                options: ["bacteria", "hygiene", "pets", "birds"],
+                correctAnswer: "bacteria"
+            },
+            {
+                question: "A paramedic must know basic first aid procedures, _______ bandaging wounds.",
+                options: ["containing", "including", "consisting", "enclosing"],
+                correctAnswer: "including"
+            },
+            {
+                question: "When my father's breathing stopped, I did him _______ to make him breathe again.",
+                options: ["UAE", "CBC", "CPR", "MBC"],
+                correctAnswer: "CPR"
+            },
+            {
+                question: "Don't _______ pressure on me: I can't give you any more money.",
+                options: ["take", "remove", "sit", "put"],
+                correctAnswer: "put"
+            },
+            {
+                question: "Children can't _______ their feelings in words, but they express them in actions.",
+                options: ["breathe", "prescribe", "evacuate", "describe"],
+                correctAnswer: "describe"
+            },
+            {
+                question: "It's essential to _______ the injured immediately after an accident.",
+                options: ["evaluate", "evacuate", "murder", "poison"],
+                correctAnswer: "evacuate"
+            }
+        ];
+
+        // Get DOM elements
+        const quizQuestionsContainer = document.getElementById('quiz-questions');
+        const submitButton = document.getElementById('submit-quiz');
+        const quizResultsDiv = document.getElementById('quiz-results');
+        const scoreSpan = document.getElementById('score');
+        const totalQuestionsSpan = document.getElementById('total-questions');
+        const retakeButton = document.getElementById('retake-quiz');
+
+        let userAnswers = {}; // Store user's selected answers for each question
+        let isQuizSubmitted = false; // Flag to prevent multiple submissions
+
+        /**
+         * Renders all quiz questions to the DOM.
+         */
+        function renderQuiz() {
+            quizQuestionsContainer.innerHTML = ''; // Clear previous questions
+            quizData.forEach((q, index) => {
+                const questionNumber = index + 1;
+                const questionCard = document.createElement('div');
+                questionCard.className = 'question-card';
+                questionCard.setAttribute('data-question-index', index);
+
+                const questionText = document.createElement('p');
+                questionText.className = 'question-text';
+                questionText.textContent = `${questionNumber}. ${q.question}`;
+                questionCard.appendChild(questionText);
+
+                const optionsGrid = document.createElement('div');
+                optionsGrid.className = 'options-grid';
+
+                q.options.forEach(option => {
+                    const optionButton = document.createElement('button');
+                    optionButton.className = 'option-button';
+                    optionButton.textContent = option;
+                    optionButton.setAttribute('data-option', option);
+                    optionButton.addEventListener('click', () => selectOption(index, option, optionButton));
+                    optionsGrid.appendChild(optionButton);
+                });
+
+                questionCard.appendChild(optionsGrid);
+                quizQuestionsContainer.appendChild(questionCard);
+            });
+
+            totalQuestionsSpan.textContent = quizData.length; // Set total questions display
+            quizResultsDiv.classList.add('hidden'); // Hide results initially
+            submitButton.classList.remove('hidden'); // Show submit button
+            submitButton.disabled = false; // Enable submit button
+            isQuizSubmitted = false; // Reset submission flag
+            userAnswers = {}; // Clear user answers
+            resetOptionStyles(); // Reset any previous styling
+        }
+
+        /**
+         * Handles the selection of an option for a given question.
+         * @param {number} questionIndex - The index of the question.
+         * @param {string} selectedOption - The text of the selected option.
+         * @param {HTMLElement} clickedButton - The button element that was clicked.
+         */
+        function selectOption(questionIndex, selectedOption, clickedButton) {
+            if (isQuizSubmitted) return; // Prevent selection after submission
+
+            // Remove 'selected' class from all buttons for this question
+            const questionCard = quizQuestionsContainer.querySelector(`[data-question-index="${questionIndex}"]`);
+            questionCard.querySelectorAll('.option-button').forEach(button => {
+                button.classList.remove('selected');
+            });
+
+            // Add 'selected' class to the clicked button
+            clickedButton.classList.add('selected');
+            userAnswers[questionIndex] = selectedOption; // Store the selected answer
+        }
+
+        /**
+         * Calculates the score, provides feedback, and displays results.
+         */
+        function submitQuiz() {
+            if (isQuizSubmitted) return; // Prevent multiple submissions
+            isQuizSubmitted = true;
+            submitButton.disabled = true; // Disable submit button
+
+            let score = 0;
+            quizData.forEach((q, index) => {
+                const questionCard = quizQuestionsContainer.querySelector(`[data-question-index="${index}"]`);
+                const optionsButtons = questionCard.querySelectorAll('.option-button');
+                const userAnswer = userAnswers[index];
+                const correctAnswer = q.correctAnswer;
+
+                optionsButtons.forEach(button => {
+                    button.disabled = true; // Disable all buttons after submission
+                    button.classList.remove('selected'); // Remove selected style
+
+                    if (button.getAttribute('data-option') === correctAnswer) {
+                        button.classList.add('correct'); // Highlight correct answer
+                    }
+
+                    if (userAnswer && button.getAttribute('data-option') === userAnswer && userAnswer !== correctAnswer) {
+                        button.classList.add('incorrect'); // Highlight incorrect user answer
+                    }
+                });
+
+                if (userAnswer === correctAnswer) {
+                    score++;
+                }
+            });
+
+            scoreSpan.textContent = score;
+            quizResultsDiv.classList.remove('hidden'); // Show results
+            quizResultsDiv.scrollIntoView({ behavior: 'smooth', block: 'end' }); // Scroll to results
+        }
+
+        /**
+         * Resets the quiz to its initial state.
+         */
+        function retakeQuiz() {
+            renderQuiz(); // Re-render all questions
+            quizResultsDiv.classList.add('hidden'); // Hide results
+            submitButton.classList.remove('hidden'); // Show submit button
+            submitButton.disabled = false; // Enable submit button
+            isQuizSubmitted = false; // Reset submission flag
+            userAnswers = {}; // Clear user answers
+            window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top
+        }
+
+        /**
+         * Resets the styling of all option buttons.
+         */
+        function resetOptionStyles() {
+            document.querySelectorAll('.option-button').forEach(button => {
+                button.classList.remove('selected', 'correct', 'incorrect');
+                button.disabled = false;
+            });
+        }
+
+        // Event Listeners
+        submitButton.addEventListener('click', submitQuiz);
+        retakeButton.addEventListener('click', retakeQuiz);
+
+        // Initial render of the quiz when the page loads
+        document.addEventListener('DOMContentLoaded', renderQuiz);
+    </script>
+</body>
+</html>
+
